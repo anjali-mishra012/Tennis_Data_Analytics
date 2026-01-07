@@ -1,12 +1,15 @@
 # Tennis_Data_Analytics
 This is a repository containing codes and queries regarding Sports radar API data extraction and data analytics on Tennis data
 
-**Problem Statement: ** The SportRadar Event Explorer project aims to develop a comprehensive solution for managing, visualizing, and analyzing sports competition data extracted from the Sportradar API. The application will parse JSON data, store structured information in a relational database, and provide intuitive insights into tournaments, competition hierarchies, and event details. This project is designed to assist sports enthusiasts, analysts, and organizations in understanding competition structures and trends while exploring detailed event-specific information interactively.
+## Problem Statement: 
+The SportRadar Event Explorer project aims to develop a comprehensive solution for managing, visualizing, and analyzing sports competition data extracted from the Sportradar API. The application will parse JSON data, store structured information in a relational database, and provide intuitive insights into tournaments, competition hierarchies, and event details. This project is designed to assist sports enthusiasts, analysts, and organizations in understanding competition structures and trends while exploring detailed event-specific information interactively.
 
-Data Extraction ● Parse and extract data from Sportradar JSON responses.(using API) ● Transform nested JSON structures into a flat relational schema for analysis. Data Storage:
+## Data Extraction 
+● Parse and extract data from Sportradar JSON responses.(using API) ● Transform nested JSON structures into a flat relational schema for analysis. Data Storage:
 ● Create a SQL database with well-designed schema (e.g., defining appropriate data types and primary keys).
 
-**Build a Streamlit Application: ** ● Connect the Streamlit app with the SQL database for real-time query execution. ● Display analysis results in the form of tables, charts, or dashboards within the app.User Interface: Interactive dashboards with filters for competition types, levels, and categories.
+## Build a Streamlit Application: 
+● Connect the Streamlit app with the SQL database for real-time query execution. ● Display analysis results in the form of tables, charts, or dashboards within the app.User Interface: Interactive dashboards with filters for competition types, levels, and categories.
 
 Tables Used Are:
 
