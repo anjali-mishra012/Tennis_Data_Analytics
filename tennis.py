@@ -65,12 +65,6 @@ ranking_movement = st.sidebar.radio(
     ["All", "Improving ⬆️", "Declining ⬇️", "Stable ➖"]
 )
 
-# 4️⃣ Data View Mode
-data_view = st.sidebar.selectbox(
-    "🧠 View Mode",
-    ["Summary View", "Detailed View", "Analyst View"]
-)
-
 # =========================
 # HOME PAGE
 # =========================
@@ -265,6 +259,7 @@ elif page == "🏆 Leaderboards":
         country_counts.rename(columns={"country": "Country"}),
         use_container_width=True
     )
+
 
 
 
