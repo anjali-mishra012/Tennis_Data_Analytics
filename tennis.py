@@ -44,6 +44,33 @@ page = st.sidebar.selectbox(
     ]
 )
 
+st.sidebar.markdown("## 🎛️ Insight Controls")
+
+# 1️⃣ Player Performance Tier
+performance_tier = st.sidebar.selectbox(
+    "🏅 Player Performance Tier",
+    ["All Players", "Elite (Top 10)", "Strong (Top 50)", "Rising (Top 100)"]
+)
+
+# 2️⃣ Competition Level
+competition_level = st.sidebar.multiselect(
+    "🏟️ Competition Level",
+    ["ITF Men", "ITF Women", "Challenger"],
+    default=["ITF Men", "ITF Women"]
+)
+
+# 3️⃣ Ranking Movement
+ranking_movement = st.sidebar.radio(
+    "📈 Ranking Movement",
+    ["All", "Improving ⬆️", "Declining ⬇️", "Stable ➖"]
+)
+
+# 4️⃣ Data View Mode
+data_view = st.sidebar.selectbox(
+    "🧠 View Mode",
+    ["Summary View", "Detailed View", "Analyst View"]
+)
+
 # =========================
 # HOME PAGE
 # =========================
@@ -141,26 +168,67 @@ elif page == "🧑 Player Details":
 # COUNTRY ANALYSIS
 # =========================
 elif page == "🌍 Country Analysis":
+    st.title("🌍 Country-Wise Analysis")
 
-    df = competitors.merge(rankings, on="competitor_id")
-    summary = df.groupby("country").agg(
-        Competitors=("competitor_id", "count"),
-        AvgPoints=("points", "mean")
-    ).reset_index().sort_values("Competitors", ascending=False)
-
-    st.dataframe(summary, use_container_width=True)
-
+    query = """
+        SELECT c.Country, 
+               COUNT(*) AS Competitors,
+               AVG(cr.points) AS AvgPoints
+        FROM Competitors c
+        JOIN Competitor_Rankings cr 
+        ON c.competitor_id = cr.competitor_id
+        GROUP BY c.Country
+        ORDER BY Competitors DESC
+    """
+    df = execute_query(query)
+    st.dataframe(df, use_container_width=True)
 # =========================
 # LEADERBOARDS
 # =========================
 elif page == "🏆 Leaderboards":
+    st.title("🏆 Leaderboards")
 
-    st.subheader("🥇 Top Ranked Players")
-    top_ranked = competitors.merge(rankings, on="competitor_id") \
-                            .sort_values("rank").head(10)
-    st.dataframe(top_ranked[["name", "country", "rank"]])
+    st.subheader("🥇 Top Ranked Competitors")
+    top_ranked = execute_query("""
+        SELECT c.Name, c.Country, cr.Rank
+        FROM Competitor_Rankings cr
+        JOIN Competitors c 
+        ON cr.competitor_id = c.competitor_id
+        ORDER BY cr.rank ASC
+        LIMIT 10
+    """)
+    st.table(top_ranked)
 
     st.subheader("🔥 Highest Point Scorers")
-    top_points = competitors.merge(rankings, on="competitor_id") \
-                            .sort_values("points", ascending=False).head(10)
-    st.dataframe(top_points[["name", "country", "points"]])
+    top_points = execute_query("""
+        SELECT c.Name, c.Country, cr.Points
+        FROM Competitor_Rankings cr
+        JOIN Competitors c 
+        ON cr.competitor_id = c.competitor_id
+        ORDER BY cr.points DESC
+        LIMIT 10
+    """)
+    st.dataframe(top_points, use_container_width=True)
+
+    st.subheader("🎯 Categories with Highest Matches")
+    category_counts = execute_query("""
+        SELECT cat.category_name AS Category, 
+               COUNT(*) AS Matches
+        FROM Competitions comp
+        JOIN Categories cat 
+        ON comp.category_id = cat.category_id
+        GROUP BY cat.category_name
+        ORDER BY Matches DESC
+    """)
+    st.dataframe(category_counts, use_container_width=True)
+
+    st.subheader("🌍 Countries with Most Competitors")
+    competitors = execute_query("""
+        SELECT c.Country, 
+               COUNT(c.competitor_id) AS Competitors
+        FROM Competitors c
+        GROUP BY c.Country
+        ORDER BY COUNT(c.competitor_id) DESC
+    """)
+    st.dataframe(competitors, use_container_width=True)
+
