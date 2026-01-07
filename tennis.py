@@ -4,7 +4,6 @@
 import streamlit as st
 import pandas as pd
 import altair as alt
-from pandasql import sqldf
 
 # =========================
 # LOAD CSV DATA (NO CHANGE IN DATA)
@@ -227,4 +226,5 @@ elif page == "🏆 Leaderboards":
         ORDER BY r.points DESC
         LIMIT 10
     """), use_container_width=True)
+
 
