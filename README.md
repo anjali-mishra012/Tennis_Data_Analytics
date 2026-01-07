@@ -3,6 +3,10 @@
 This repository contains code and analysis for extracting, storing, and analyzing Tennis competition data using the Sportradar API.  
 The project focuses on SQL-based analysis and an interactive Streamlit dashboard for exploring tennis competitions, venues, and player rankings.
 
+## 🔗 App
+
+[![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://tennis-analytics.streamlit.app/)
+
 
 ## Problem Statement
 
