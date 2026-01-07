@@ -153,14 +153,35 @@ elif page == "🔍 Search Competitors":
     st.dataframe(df[["name", "country", "rank", "points"]], use_container_width=True)
 
 # =========================
-# PLAYER DETAILS
+# COMPETITOR DETAILS
 # =========================
 elif page == "🧑 Player Details":
+    st.title("🧑 Player Details")
 
-    player = st.selectbox("🎾 Select Player", sorted(competitors["name"].unique()))
+    # dropdown from CSV
+    selected_name = st.selectbox(
+        "🎾 Select Player",
+        sorted(competitors["name"].unique())
+    )
 
-    df = competitors.merge(rankings, on="competitor_id")
-    df = df[df["name"] == player]
+    df = competitors.merge(
+        rankings,
+        on="competitor_id",
+        how="inner"
+    )
+
+    df = df[df["name"] == selected_name][
+        ["name", "country", "rank", "movement", "points", "competitions_played"]
+    ]
+
+    df = df.rename(columns={
+        "name": "Name",
+        "country": "Country",
+        "rank": "Rank",
+        "movement": "Movement",
+        "points": "Points",
+        "competitions_played": "Competitions"
+    })
 
     st.table(df)
 
@@ -170,65 +191,79 @@ elif page == "🧑 Player Details":
 elif page == "🌍 Country Analysis":
     st.title("🌍 Country-Wise Analysis")
 
-    query = """
-        SELECT c.Country, 
-               COUNT(*) AS Competitors,
-               AVG(cr.points) AS AvgPoints
-        FROM Competitors c
-        JOIN Competitor_Rankings cr 
-        ON c.competitor_id = cr.competitor_id
-        GROUP BY c.Country
-        ORDER BY Competitors DESC
-    """
-    df = execute_query(query)
-    st.dataframe(df, use_container_width=True)
+    df = competitors.merge(
+        rankings,
+        on="competitor_id",
+        how="inner"
+    )
+
+    summary = (
+        df.groupby("country")
+        .agg(
+            Competitors=("competitor_id", "count"),
+            AvgPoints=("points", "mean")
+        )
+        .reset_index()
+        .sort_values("Competitors", ascending=False)
+    )
+
+    summary = summary.rename(columns={"country": "Country"})
+    st.dataframe(summary, use_container_width=True)
 # =========================
 # LEADERBOARDS
 # =========================
 elif page == "🏆 Leaderboards":
     st.title("🏆 Leaderboards")
 
+    df = competitors.merge(
+        rankings,
+        on="competitor_id",
+        how="inner"
+    )
+
     st.subheader("🥇 Top Ranked Competitors")
-    top_ranked = execute_query("""
-        SELECT c.Name, c.Country, cr.Rank
-        FROM Competitor_Rankings cr
-        JOIN Competitors c 
-        ON cr.competitor_id = c.competitor_id
-        ORDER BY cr.rank ASC
-        LIMIT 10
-    """)
-    st.table(top_ranked)
+    top_ranked = df.sort_values("rank").head(10)
+    st.table(top_ranked[["name", "country", "rank"]]
+             .rename(columns={"name": "Name", "country": "Country", "rank": "Rank"}))
 
     st.subheader("🔥 Highest Point Scorers")
-    top_points = execute_query("""
-        SELECT c.Name, c.Country, cr.Points
-        FROM Competitor_Rankings cr
-        JOIN Competitors c 
-        ON cr.competitor_id = c.competitor_id
-        ORDER BY cr.points DESC
-        LIMIT 10
-    """)
-    st.dataframe(top_points, use_container_width=True)
+    top_points = df.sort_values("points", ascending=False).head(10)
+    st.dataframe(
+        top_points[["name", "country", "points"]]
+        .rename(columns={"name": "Name", "country": "Country", "points": "Points"}),
+        use_container_width=True
+    )
 
     st.subheader("🎯 Categories with Highest Matches")
-    category_counts = execute_query("""
-        SELECT cat.category_name AS Category, 
-               COUNT(*) AS Matches
-        FROM Competitions comp
-        JOIN Categories cat 
-        ON comp.category_id = cat.category_id
-        GROUP BY cat.category_name
-        ORDER BY Matches DESC
-    """)
-    st.dataframe(category_counts, use_container_width=True)
+    cat_df = competitions.merge(
+        categories,
+        on="category_id",
+        how="inner"
+    )
+
+    category_counts = (
+        cat_df.groupby("category_name")
+        .size()
+        .reset_index(name="Matches")
+        .sort_values("Matches", ascending=False)
+    )
+
+    st.dataframe(
+        category_counts.rename(columns={"category_name": "Category"}),
+        use_container_width=True
+    )
 
     st.subheader("🌍 Countries with Most Competitors")
-    competitors = execute_query("""
-        SELECT c.Country, 
-               COUNT(c.competitor_id) AS Competitors
-        FROM Competitors c
-        GROUP BY c.Country
-        ORDER BY COUNT(c.competitor_id) DESC
-    """)
-    st.dataframe(competitors, use_container_width=True)
+    country_counts = (
+        competitors.groupby("country")
+        .size()
+        .reset_index(name="Competitors")
+        .sort_values("Competitors", ascending=False)
+    )
+
+    st.dataframe(
+        country_counts.rename(columns={"country": "Country"}),
+        use_container_width=True
+    )
+
 
