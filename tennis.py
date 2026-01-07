@@ -7,13 +7,19 @@ from sqlalchemy import create_engine
 import altair as alt
 
 
-
-
 # =========================
-# DB CONNECTION (UNCHANGED)
+# LOAD CSV DATA 
 # =========================
-DATABASE_URI = "mysql+mysqlconnector://tennis_user:Tennis%40123@localhost:3306/tennis_data"
-engine = create_engine(DATABASE_URI)
+@st.cache_data
+def load_data():
+    competitors = pd.read_csv("competitors.csv")
+    rankings = pd.read_csv("competitor_rankings.csv")
+    competitions = pd.read_csv("competitions.csv")
+    categories = pd.read_csv("categories.csv")
+    venues = pd.read_csv("venues.csv")
+    return competitors, rankings, competitions, categories, venues
+
+competitors, rankings, competitions, categories, venues = load_data()
 
 def execute_query(query, params=None):
     with engine.connect() as conn:
@@ -309,3 +315,4 @@ elif page == "🏆 Leaderboards":
         ORDER BY COUNT(c.competitor_id) DESC
     """)
     st.dataframe(competitors, use_container_width=True)
+
