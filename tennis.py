@@ -96,7 +96,7 @@ if page == "🏠 Home Page":
 
     st.dataframe(top_cat, use_container_width=True)
 
-    st.subheader("🏅 Top 10 Players by Points")
+    st.subheader("🏅 Top 2 Players by Points")
 
     top_players = competitors.merge(rankings, on="competitor_id") \
                              .sort_values("points", ascending=False).head(10)
@@ -259,6 +259,7 @@ elif page == "🏆 Leaderboards":
         country_counts.rename(columns={"country": "Country"}),
         use_container_width=True
     )
+
 
 
 
