@@ -129,7 +129,7 @@ if page == "🏠 Home Page":
     """)
     st.dataframe(most_active_categories, use_container_width=True)
 
-    st.subheader("🏅 Top 10 Players by Points")
+    st.subheader("🏅 Top 2 Players by Points")
     top_percent = execute_query("""
         SELECT c.name AS Competitor, 
                cr.Rank, 
@@ -303,3 +303,4 @@ elif page == "🏆 Leaderboards":
         ORDER BY COUNT(c.competitor_id) DESC
     """)
     st.dataframe(competitors, use_container_width=True)
+
